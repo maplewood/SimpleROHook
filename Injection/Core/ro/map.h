@@ -7,7 +7,7 @@ struct CLightmap {
 	struct COLOR intensity[4];
 };
 
-
+//セルの高さ？
 struct CAttrCell {
 	float h1;
 	float h2;
@@ -56,6 +56,7 @@ public:
 		pos.x = ((attrX - m_width / 2) * (float)m_zoom) + 2.5f;
 		pos.y = ((attrY - m_height / 2) * (float)m_zoom) + 2.5f;
 	};
+	//セル座標変換
 	void ConvertToCellCoor(float x, float z, long& cx, long& cy)
 	{
 		cx = (long)( x / m_zoom + m_width /2 );

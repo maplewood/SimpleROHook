@@ -101,6 +101,7 @@ private:
 
 	void DrawBBE(IDirect3DDevice7* d3ddevice);
 	void DrawM2E(IDirect3DDevice7* d3ddevice);
+	void DrawST(IDirect3DDevice7* d3ddevice);
 
 	void PacketProc(const char *packetdata);
 

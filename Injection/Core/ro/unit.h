@@ -77,6 +77,7 @@ struct vector3d {
 	void Set(float nx, float ny, float nz) { x=nx;y=ny;z=nz; };
 
 	void MatrixMult(struct vector3d&, struct matrix&);
+	void MatrixMult2(struct vector3d&, struct matrix&);
 
 	void CrossProduct(struct vector3d& u, struct vector3d& v)
 	{
@@ -140,6 +141,14 @@ struct vector3d {
 };
 
 struct matrix {
+	//v11,	v12,	v13
+	//v21,	v22,	v23
+	//v31,	v32,	v33
+	//v41,	v42,	v43
+	//‰ñ“]	‰ñ“]	‰ñ“]
+	//‰ñ“]	‰ñ“]	‰ñ“]
+	//‰ñ“]	‰ñ“]	‰ñ“]
+	//ˆÚ“®	ˆÚ“®	ˆÚ“®
 	float v11;
 	float v12;
 	float v13;

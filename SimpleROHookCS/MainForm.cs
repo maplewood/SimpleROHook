@@ -114,6 +114,11 @@ namespace SimpleROHookCS
             kHzAudioModeonBootToolStripMenuItem.Checked
                 = m_SharedData._44khz_audiomode;
 
+            test01ToolStripMenuItem.Checked
+                = m_SharedData.test01;
+            test02ToolStripMenuItem.Checked
+              = m_SharedData.test02;
+
             nPCLoggerToolStripMenuItem.Checked = m_npcLogger.Visible;
         }
 
@@ -231,6 +236,18 @@ namespace SimpleROHookCS
             alphaLeveltoolStripMenuItem.Text =
                 String.Format("Alpha Level {0}", value);
         }
+        private void test01ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var tsm = (ToolStripMenuItem)sender;
+            m_SharedData.test01 = tsm.Checked;
+        }
+
+        private void test02ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var tsm = (ToolStripMenuItem)sender;
+            m_SharedData.test02 = tsm.Checked;
+        }
+
 
         private void InitTaskTrayMenu()
         {
@@ -289,6 +306,10 @@ namespace SimpleROHookCS
                         = configration._44khz_audiomode;
                     m_SharedData.cpucoolerlevel
                         = configration.cpucoolerlevel;
+                    m_SharedData.test01
+                        = configration.test01;
+                    m_SharedData.test02
+                        = configration.test02;
                 }
                 #endregion
             }
@@ -349,6 +370,10 @@ namespace SimpleROHookCS
                     = m_SharedData._44khz_audiomode;
                 configration.cpucoolerlevel
                     = m_SharedData.cpucoolerlevel;
+                configration.test01
+                    = m_SharedData.test01;
+                configration.test02
+                    = m_SharedData.test02;
 
                 writer.Formatting = Formatting.Indented;
                 serializer.Serialize(writer, configration);
@@ -376,6 +401,7 @@ namespace SimpleROHookCS
             }
         }
 
+
     }
 
     public class Config
@@ -395,6 +421,8 @@ namespace SimpleROHookCS
             objectinformation = false;
             _44khz_audiomode = false;
             cpucoolerlevel = 0;
+            test01 = false;
+            test02 = false;
         }
 
         public bool write_packetlog { get; set; }
@@ -410,6 +438,8 @@ namespace SimpleROHookCS
         public bool objectinformation { get; set; }
         public bool _44khz_audiomode { get; set; }
         public int cpucoolerlevel { get; set; }
+        public bool test01 { get; set; }
+        public bool test02 { get; set; }
 
         // without serialize
         [System.Xml.Serialization.XmlIgnoreAttribute]

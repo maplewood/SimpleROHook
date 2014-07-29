@@ -438,7 +438,7 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 				str << "m_job = " << std::hex << (unsigned long)pPlayer->m_job << "\n";
 				str << "m_sex = " << std::hex << (unsigned long)pPlayer->m_sex << "\n\n";
 
-				unsigned char *pdump = (unsigned char*)&pPlayer->m_efId;
+				unsigned char *pdump = (unsigned char*)&pPlayer->m_gid;
 				for(int ii = 0;ii < 64 ;ii++){
 					str << std::setfill('0') << std::setw(2) << std::hex << (int)pdump[ii] << ",";
 					if( (ii % 0x10)==0x0f ){
@@ -520,7 +520,7 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 					std::stringstream putinfostr;
 					putinfostr << "(" << cx << "," << cy << ")" << std::endl;
 					//putinfostr << pItem->m_itemName << std::endl;
-				//	putinfostr << "aid = " << pItem->m_aid << std::endl;
+					//putinfostr << "aid = " << pItem->m_aid << std::endl;
 					putinfostr << "itemid = " << pItem->m_itemid2 << std::endl;
 
 					int sx,sy;
@@ -533,30 +533,29 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 				}
 			}
 
+			if (g_pSharedData->test01){
+				int actornums = p_gamemode->m_world->m_actorList.size();
+				str << " m_actorList size =" << actornums << "\n";
+				std::list<CGameActor*> actorList = p_gamemode->m_world->m_actorList;
+				for (std::list<CGameActor*>::iterator it = actorList.begin(); it != actorList.end(); it++)
+				{
+					CGameActor *pGameActor = *it;
+					if (pGameActor){
+						long cx, cy;
+						pAttr->ConvertToCellCoor(pGameActor->m_pos.x, pGameActor->m_pos.z, cx, cy);
 
-			int actornums = p_gamemode->m_world->m_actorList.size();
-			str << " m_actorList size =" << actornums << "\n";
-			std::list<CGameActor*> actorList = p_gamemode->m_world->m_actorList;
-			for( std::list<CGameActor*>::iterator it = actorList.begin() ; it != actorList.end() ; it++ )
-			{
-				CGameActor *pGameActor = *it;
-				if( pGameActor ){
-					long cx,cy;
-					pAttr->ConvertToCellCoor(pGameActor->m_pos.x,pGameActor->m_pos.z,cx,cy);
+						std::stringstream putinfostr;
+						putinfostr << "(" << cx << "," << cy << ")" << std::endl;
+						//	putinfostr << "dest(" << pGameActor->m_moveDestX << "," << pGameActor->m_moveDestY << ")" << std::endl;
 
-					std::stringstream putinfostr;
-					putinfostr << "(" << cx << "," << cy << ")" << std::endl;
-				//	putinfostr << "dest(" << pGameActor->m_moveDestX << "," << pGameActor->m_moveDestY << ")" << std::endl;
-					putinfostr << "lv = " << pGameActor->m_clevel << std::endl;
-					putinfostr << "job = " << pGameActor->m_job << std::endl;
+						int sx, sy;
+						float fx, fy, oow;
+						ProjectVertex(pGameActor->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
+						sx = (int)fx;
+						sy = (int)fy;
 
-					int sx,sy;
-					float fx,fy,oow;
-					ProjectVertex( pGameActor->m_pos,pView->m_viewMatrix,&fx,&fy,&oow);
-					sx = (int)fx;
-					sy = (int)fy;
-
-					m_pSFastFont->DrawText((LPSTR)putinfostr.str().c_str(), sx, sy,D3DCOLOR_ARGB(255,255,255,255),2,NULL);
+						m_pSFastFont->DrawText((LPSTR)putinfostr.str().c_str(), sx, sy, D3DCOLOR_ARGB(255, 255, 255, 255), 2, NULL);
+					}
 				}
 			}
 			
@@ -608,6 +607,7 @@ void CRoCodeBind::DrawOn3DMap(IDirect3DDevice7* d3ddevice)
 
 		DrawM2E(d3ddevice);
 		DrawBBE(d3ddevice);
+		DrawST(d3ddevice);
 
 		RestoreRenderState(d3ddevice);
 	}
@@ -646,6 +646,7 @@ void CRoCodeBind::DrawM2E(IDirect3DDevice7* d3ddevice)
 
 			if( pSkill && pSkill->m_job < 0x100 && m_M2ESkillColor[pSkill->m_job] ){
 				DWORD color = m_M2ESkillColor[pSkill->m_job];
+				//
 				CPOLVERTEX vertex[4] =
 				{
 					{   0.0,  0.0,   0.0f,  1.0f, color },
@@ -660,7 +661,6 @@ void CRoCodeBind::DrawM2E(IDirect3DDevice7* d3ddevice)
 
 				pAttr->ConvertToCellCoor(centerpos.x,centerpos.z,cx,cy);
 				pCell = pAttr->GetCell(cx, cy);
-
 				polvect[0].Set(centerpos.x -2.4f, pCell->h1 ,centerpos.z -2.4f);
 				polvect[1].Set(centerpos.x +2.4f, pCell->h2 ,centerpos.z -2.4f);
 				polvect[2].Set(centerpos.x -2.4f, pCell->h3 ,centerpos.z +2.4f);
@@ -778,6 +778,9 @@ void CRoCodeBind::DrawBBE(IDirect3DDevice7* d3ddevice)
 			}
 		}
 	}
+}
+
+void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
 }
 
  int CRoCodeBind::GetPacketLength(int opcode)

@@ -35,6 +35,8 @@ namespace SimpleROHookCS
             public int objectinformation;
             public int _44khz_audiomode;
             public int cpucoolerlevel;
+            public int test01;
+            public int test02;
             public fixed char configfilepath[MAX_PATH];
             public fixed char musicfilename[MAX_PATH];
         }
@@ -73,6 +75,9 @@ namespace SimpleROHookCS
             musicfilename = "";
             executeorder = false;
             g_hROWindow = 0;
+            //test
+            test01 = false;
+            test02 = false;
         }
         public void Dispose()
         {
@@ -278,6 +283,29 @@ namespace SimpleROHookCS
                 char[] cstr = value.ToCharArray();
                 Marshal.Copy(cstr, 0, (IntPtr)m_pSharedMemory->musicfilename, cstr.Length);
                 m_pSharedMemory->musicfilename[cstr.Length] = '\0';
+            }
+        }
+        //test
+        public bool test01
+        {
+            get
+            {
+                return (m_pSharedMemory->test01 == 0) ? false : true;
+            }
+            set
+            {
+                m_pSharedMemory->test01 = (value == false) ? 0 : 1;
+            }
+        }
+        public bool test02
+        {
+            get
+            {
+                return (m_pSharedMemory->test02 == 0) ? false : true;
+            }
+            set
+            {
+                m_pSharedMemory->test02 = (value == false) ? 0 : 1;
             }
         }
     }
