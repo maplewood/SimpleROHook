@@ -39,6 +39,9 @@ namespace SimpleROHookCS
             public int test02;
             public fixed char configfilepath[MAX_PATH];
             public fixed char musicfilename[MAX_PATH];
+            //test
+
+
         }
 
         private MemoryMappedFile m_Mmf = null;

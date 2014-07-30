@@ -310,6 +310,12 @@ void vector3d::MatrixMult(struct vector3d& v, struct matrix& m)
 	y = v.x * m.v12 + v.y * m.v22 + v.z * m.v32 + m.v42;
 	z = v.x * m.v13 + v.y * m.v23 + v.z * m.v33 + m.v43;
 }
+void vector3d::MatrixMult2(struct vector3d& v, struct matrix& m)
+{
+	x = v.x * m.v11 - v.y * m.v21 - v.z * m.v31 - m.v41;
+	y = v.x * m.v12 - v.y * m.v22 - v.z * m.v32 - m.v42;
+	z = v.x * m.v13 - v.y * m.v23 - v.z * m.v33 - m.v43;
+}
 
 // CRenderer::ProjectVertex
 void CRoCodeBind::ProjectVertex(vector3d& src,matrix& vtm,float *x,float *y,float *oow)
@@ -392,14 +398,14 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 	if( !g_renderer )return;
 	if( !*g_renderer )return;
 
-	if( g_pSharedData->show_framerate ){
+	if (g_pSharedData->show_framerate){
 		std::stringstream str;
 		str << g_PerformanceCounter.GetFrameRate() << "fps : "<<(int)g_PerformanceCounter.GetTotalTick() << std::endl;
 
 		m_pSFastFont->DrawText((LPSTR)str.str().c_str(), 0, 0,D3DCOLOR_ARGB(255,255,255,255),0,NULL);
 	}
 
-	if( g_pSharedData->objectinformation ){
+	if (g_pSharedData->objectinformation){
 		std::stringstream str;
 		CModeMgr *pcmode = g_pmodeMgr;
 		//str.str("");
@@ -492,7 +498,6 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 				//
 				//
 				putinfostr << "(" << cx << "," << cy << ")" << std::endl;
-
 				int sx,sy;
 				float fx,fy,oow;
 				ProjectVertex( pPlayer->m_pos,pView->m_viewMatrix,&fx,&fy,&oow);
@@ -546,6 +551,8 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 
 						std::stringstream putinfostr;
 						putinfostr << "(" << cx << "," << cy << ")" << std::endl;
+						putinfostr << std::setfill('0') << std::setw(8) << std::hex << pGameActor->m_gid << std::endl;
+
 						//	putinfostr << "dest(" << pGameActor->m_moveDestX << "," << pGameActor->m_moveDestY << ")" << std::endl;
 
 						int sx, sy;
@@ -781,6 +788,93 @@ void CRoCodeBind::DrawBBE(IDirect3DDevice7* d3ddevice)
 }
 
 void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
+	//if (g_pSharedData->test02 == FALSE)return;
+	//CGameMode *pGamemode = (CGameMode*)g_pmodeMgr->m_curMode;
+	//CWorld *pWorld = pGamemode->m_world;
+	//CView *pView = pGamemode->m_view;
+	//int zbias = g_pSharedData->ground_zbias;
+
+	//d3ddevice->SetTexture(0, NULL);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_ZENABLE, D3DZB_TRUE);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_ZBIAS, zbias);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, FALSE);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATER);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0x00);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+	//d3ddevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+
+	//if (pWorld && pView && pWorld->m_attr){
+	//	C3dAttr *pAttr = pWorld->m_attr;
+	//	CPlayer *pPlayer = (CPlayer*)pGamemode->m_world->m_player;
+	//	DWORD color = 0xFF000000;
+	//	//local
+	//	CPOLVERTEX vertex[4] =
+	//	{
+	//		{   0.0,   0.0, 0.0f, 1.0f, color },
+	//		{ 100.0,   0.0, 0.0f, 1.0f, color },
+	//		{   0.0, 100.0, 0.0f, 1.0f, color },
+	//		{ 100.0, 100.0, 0.0f, 1.0f, color }
+	//	};
+	//	CAttrCell *pCell;
+	//	long cx, cy;
+	//	pAttr->ConvertToCellCoor(pPlayer->m_pos.x, pPlayer->m_pos.z, cx, cy);
+	//	pCell = pAttr->GetCell(cx, cy);
+	//	vector3d centerpos(pPlayer->m_pos), polvect[4];
+	//	for (int ii = 0; ii < 4; ii++){
+	//		polvect[ii].x = centerpos.x;
+	//		polvect[ii].y = pCell->h1;
+	//		polvect[ii].z = centerpos.z;
+	//	}
+	//	for (int ii = 0; ii < 4; ii++){
+	//		vector3d rollvect;
+	//		rollvect.MatrixMult2(polvect[ii],pView->m_viewMatrix);
+	//		polvect[ii].x = rollvect.x;
+	//		polvect[ii].y = rollvect.y;
+	//		polvect[ii].z = rollvect.z;
+	//	}
+	//	polvect[0].Set(polvect[0].x - 2.5f, polvect[0].y + 0, polvect[0].z - 2.5f);
+	//	polvect[1].Set(polvect[1].x + 2.5f, polvect[1].y + 0, polvect[1].z - 2.5f);
+	//	polvect[2].Set(polvect[2].x - 2.5f, polvect[2].y - 20.f, polvect[2].z - 2.5f);
+	//	polvect[3].Set(polvect[3].x + 2.5f, polvect[3].y - 20.f, polvect[3].z - 2.5f);
+
+	//	for (int ii = 0; ii < 4; ii++){
+	//		tlvertex3d tlv3d;
+	//		ProjectVertex(polvect[ii], pView->m_viewMatrix, &tlv3d);
+	//		vertex[ii].x = tlv3d.x;
+	//		vertex[ii].y = tlv3d.y;
+	//		vertex[ii].z = tlv3d.z;
+	//		vertex[ii].rhw = tlv3d.oow;
+	//	}
+
+
+	//	std::stringstream str;
+	//	str << std::endl<<std::endl;
+	//	for (int ii = 0; ii < 4; ii++){
+	//		str << "p[" << ii << "].x = " << std::setfill('0') << std::setw(8) << polvect[ii].x << ", ";
+	//		str << "p[" << ii << "].y = " << std::setfill('0') << std::setw(8) << polvect[ii].y << ", ";
+	//		str << "p[" << ii << "].z = " << std::setfill('0') << std::setw(8) << polvect[ii].z ;
+	//		str << std::endl;
+	//		str << "v[" << ii << "].x = " << std::setfill('0') << std::setw(8) << vertex[ii].x << ", ";
+	//		str << "v[" << ii << "].y = " << std::setfill('0') << std::setw(8) << vertex[ii].y << ", ";
+	//		str << "v[" << ii << "].z = " << std::setfill('0') << std::setw(8) << vertex[ii].z;
+	//		str << std::endl;
+
+
+	//	}
+	//	int sx, sy;
+	//	float fx, fy, oow;
+	//	ProjectVertex(pPlayer->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
+	//	sx = (int)fx;
+	//	sy = (int)fy;
+	//	m_pSFastFont->DrawText((LPSTR)str.str().c_str(), sx, sy, D3DCOLOR_ARGB(255, 255, 255, 255), 0, NULL);
+	//	//m_pSFastFont->Flush();
+
+	//	d3ddevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, D3DFVF_CPOLVERTEX, vertex, 4, 0);
+	//}
+
 }
 
  int CRoCodeBind::GetPacketLength(int opcode)
