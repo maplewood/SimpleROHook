@@ -252,15 +252,15 @@ namespace SimpleROHookCS
         private void InitTaskTrayMenu()
         {
             ground_zbias_ToolStripTrackBar.SetMinMax(0, 16);
-            ground_zbias_ToolStripTrackBar.SetTickFrequency(1);
+            ground_zbias_ToolStripTrackBar.SettickFrequency(1);
             ground_zbias_ToolStripTrackBar.SetChangeValue(1, 4);
 
             alphaLeveltoolStripTrackBar.SetMinMax(0, 255);
-            alphaLeveltoolStripTrackBar.SetTickFrequency(4);
+            alphaLeveltoolStripTrackBar.SettickFrequency(4);
             alphaLeveltoolStripTrackBar.SetChangeValue(1, 16);
 
             CPUCooler_toolStripTrackBar.SetMinMax(0, 3);
-            CPUCooler_toolStripTrackBar.SetTickFrequency(1);
+            CPUCooler_toolStripTrackBar.SettickFrequency(1);
             CPUCooler_toolStripTrackBar.SetChangeValue(1, 4);
         }
 

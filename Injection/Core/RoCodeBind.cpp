@@ -121,7 +121,7 @@ void CRoCodeBind::Init(IDirect3DDevice7* d3ddevice)
 		}
 		if( m_pddsFontTexture ){
 			LOGFONT logfont;
-			logfont.lfHeight         = -12;
+			logfont.lfHeight         = -10;
 			logfont.lfWidth          = 0;
 			logfont.lfEscapement     = 0;
 			logfont.lfOrientation    = 0;
@@ -131,15 +131,16 @@ void CRoCodeBind::Init(IDirect3DDevice7* d3ddevice)
 			logfont.lfUnderline      = FALSE;
 			logfont.lfStrikeOut      = FALSE;
 			logfont.lfCharSet        = DEFAULT_CHARSET;
-			logfont.lfOutPrecision   = OUT_DEFAULT_PRECIS; 
+			logfont.lfOutPrecision = OUT_TT_ONLY_PRECIS;//OUT_DEFAULT_PRECIS; 
 			logfont.lfClipPrecision  = CLIP_DEFAULT_PRECIS; 
-			logfont.lfQuality        = NONANTIALIASED_QUALITY; 
+			logfont.lfQuality = PROOF_QUALITY;//NONANTIALIASED_QUALITY; 
 			logfont.lfPitchAndFamily = FIXED_PITCH | FF_DONTCARE; 
 			_tcscpy_s(logfont.lfFaceName,_T("‚l‚r ‚oƒSƒVƒbƒN"));
 
 			m_pSFastFont = new CSFastFont;
 			m_pSFastFont->CreateFastFont(&logfont,d3ddevice,m_pddsFontTexture,0);
 		}
+
 	}
 
 }
@@ -309,12 +310,6 @@ void vector3d::MatrixMult(struct vector3d& v, struct matrix& m)
 	x = v.x * m.v11 + v.y * m.v21 + v.z * m.v31 + m.v41;
 	y = v.x * m.v12 + v.y * m.v22 + v.z * m.v32 + m.v42;
 	z = v.x * m.v13 + v.y * m.v23 + v.z * m.v33 + m.v43;
-}
-void vector3d::MatrixMult2(struct vector3d& v, struct matrix& m)
-{
-	x = v.x * m.v11 - v.y * m.v21 - v.z * m.v31 - m.v41;
-	y = v.x * m.v12 - v.y * m.v22 - v.z * m.v32 - m.v42;
-	z = v.x * m.v13 - v.y * m.v23 - v.z * m.v33 - m.v43;
 }
 
 // CRenderer::ProjectVertex
@@ -747,18 +742,18 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 				ProjectVertexEx(pPlayer->m_pos, pointvecter, pView->m_viewMatrix, &fx, &fy, &oow);
 				{
 					static int sx = 0, sy = 0;
-					DrawGage(d3ddevice, sx, sy, 60, 6, 800, D3DCOLOR_ARGB(0x00, 180, 0, 0), 0xff, 0);
 					sx = (int)fx - 30 + 60; // +60 side of the true cast bar
 					sy = (int)fy - 3;
+					DrawGage(d3ddevice, sx, sy, 60, 6, 800, D3DCOLOR_ARGB(0x00, 180, 0, 0), 0xff, 0);
 				}
 				// fake hp sp bar
 				pointvecter.Set(0, 2.5, 0);
 				ProjectVertexEx(pPlayer->m_pos, pointvecter, pView->m_viewMatrix, &fx, &fy, &oow);
 				{
 					static int sx = 0, sy = 0;
-					DrawHPSPGage(d3ddevice, sx, sy, 200, 900);
 					sx = (int)fx - 30 + 60; // +60 side of the true hpsp bar
 					sy = (int)fy - 6;
+					DrawHPSPGage(d3ddevice, sx, sy, 200, 900);
 				}
 			}
 
@@ -792,7 +787,7 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 				}
 			}
 
-			if (g_pSharedData->test01){
+//			if (g_pSharedData->test01){
 				int actornums = p_gamemode->m_world->m_actorList.size();
 				str << " m_actorList size =" << actornums << "\n";
 				std::list<CGameActor*> actorList = p_gamemode->m_world->m_actorList;
@@ -818,7 +813,7 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 						m_pSFastFont->DrawText((LPSTR)putinfostr.str().c_str(), sx, sy, D3DCOLOR_ARGB(255, 255, 255, 255), 2, NULL);
 					}
 				}
-			}
+//			}
 			
 		}
 		str << std::endl;
@@ -1044,92 +1039,189 @@ void CRoCodeBind::DrawBBE(IDirect3DDevice7* d3ddevice)
 }
 
 void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
-	//if (g_pSharedData->test02 == FALSE)return;
-	//CGameMode *pGamemode = (CGameMode*)g_pmodeMgr->m_curMode;
-	//CWorld *pWorld = pGamemode->m_world;
-	//CView *pView = pGamemode->m_view;
-	//int zbias = g_pSharedData->ground_zbias;
+	if (g_pSharedData->test02 == FALSE)return;
+	CGameMode *pGamemode = (CGameMode*)g_pmodeMgr->m_curMode;
+	CWorld *pWorld = pGamemode->m_world;
+	CView *pView = pGamemode->m_view;
+	int zbias = g_pSharedData->ground_zbias;
 
-	//d3ddevice->SetTexture(0, NULL);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_ZENABLE, D3DZB_TRUE);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_ZBIAS, zbias);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, FALSE);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATER);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0x00);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
-	//d3ddevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	d3ddevice->SetTexture(0, NULL);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_ZENABLE, D3DZB_TRUE);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, FALSE);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_ZBIAS, zbias);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, FALSE);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, FALSE);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_ALPHAFUNC, D3DCMP_GREATER);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_ALPHAREF, 0x00);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
+	d3ddevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	//-----skill timer------
+	int actornums = pGamemode->m_world->m_actorList.size();
+	std::list<CGameActor*> actorList = pGamemode->m_world->m_actorList;
+	std::list<s_skill_tm> temp_tmList = tmList;
+	//my
+	CPlayer *pPlayer = (CPlayer*)pGamemode->m_world->m_player;
+	const float BARB = -17.5f;
+	const int NAMEBX = -10;
+	const int NAMEBY =  -9;
+	const int TIMEBX =  80;
+	const int TIMEBY =   3;
+	const float SB   =  -1.8f;
+	float yy = BARB;
+	for (std::list<s_skill_tm>::iterator it = temp_tmList.begin(); it != temp_tmList.end(); it++){
+		if (pPlayer->m_gid == it->id){
+			if (it->e_tick > timeGetTime()){
+				vector3d pointvecter;
+				float fx, fy, oow;
+				std::stringstream putname;
+				std::stringstream puttime;
+				pointvecter.Set(0, yy, 0);
+				ProjectVertex(pPlayer->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
+				int sx, sy;
+				sx = (int)fx;
+				sy = (int)fy;
+				unsigned long value;
+				float t1, t2;
+				int tm, ts;
+				t1 = (float)(it->e_tick - timeGetTime());
+				t2 = (float)(it->tick);
+				tm = ((int)t1 / 1000) / 60;
+				ts = ((int)t1 / 1000) % 60;
+				value = (unsigned long)((t1 / t2) * 1000);
+
+				ProjectVertexEx(pPlayer->m_pos, pointvecter, pView->m_viewMatrix, &fx, &fy, &oow);
+				{
+					static int sx = 0, sy = 0;
+					sx = (int)fx - 30; // +60 side of the true cast bar
+					sy = (int)fy - 3;
+					DrawGage(d3ddevice, sx, sy, 60, 6, value, D3DCOLOR_ARGB(0x00, 170, 170, 220), 0x96, 0);
+					
+					putname << it->name;
+					if (tm > 0){
+						puttime << std::setfill(' ') << std::setw(3) << tm << "'";
+						puttime << std::setfill('0') << std::setw(2) << ts << "''";
+					}
+					if (tm <= 0){
+						puttime << std::setfill(' ') << std::setw(4) << " ";
+						puttime << std::setfill(' ') << std::setw(2) << ts << "''";
+					}
+					
+					sx += NAMEBX;
+					sy += NAMEBY;
+					m_pSFastFont->DrawText((LPSTR)putname.str().c_str(), sx, sy, D3DCOLOR_ARGB(230, 255,255,255), 0, NULL);
+					sx += TIMEBX;
+					sy += TIMEBY;
+					m_pSFastFont->DrawText((LPSTR)puttime.str().c_str(), sx, sy, D3DCOLOR_ARGB(150, 255, 255, 255), 1, NULL);
 
 
-	//if (pWorld && pView && pWorld->m_attr){
-	//	C3dAttr *pAttr = pWorld->m_attr;
-	//	CPlayer *pPlayer = (CPlayer*)pGamemode->m_world->m_player;
-	//	DWORD color = 0xFF000000;
-	//	//local
-	//	CPOLVERTEX vertex[4] =
-	//	{
-	//		{   0.0,   0.0, 0.0f, 1.0f, color },
-	//		{ 100.0,   0.0, 0.0f, 1.0f, color },
-	//		{   0.0, 100.0, 0.0f, 1.0f, color },
-	//		{ 100.0, 100.0, 0.0f, 1.0f, color }
-	//	};
-	//	CAttrCell *pCell;
-	//	long cx, cy;
-	//	pAttr->ConvertToCellCoor(pPlayer->m_pos.x, pPlayer->m_pos.z, cx, cy);
-	//	pCell = pAttr->GetCell(cx, cy);
-	//	vector3d centerpos(pPlayer->m_pos), polvect[4];
-	//	for (int ii = 0; ii < 4; ii++){
-	//		polvect[ii].x = centerpos.x;
-	//		polvect[ii].y = pCell->h1;
-	//		polvect[ii].z = centerpos.z;
-	//	}
-	//	for (int ii = 0; ii < 4; ii++){
-	//		vector3d rollvect;
-	//		rollvect.MatrixMult2(polvect[ii],pView->m_viewMatrix);
-	//		polvect[ii].x = rollvect.x;
-	//		polvect[ii].y = rollvect.y;
-	//		polvect[ii].z = rollvect.z;
-	//	}
-	//	polvect[0].Set(polvect[0].x - 2.5f, polvect[0].y + 0, polvect[0].z - 2.5f);
-	//	polvect[1].Set(polvect[1].x + 2.5f, polvect[1].y + 0, polvect[1].z - 2.5f);
-	//	polvect[2].Set(polvect[2].x - 2.5f, polvect[2].y - 20.f, polvect[2].z - 2.5f);
-	//	polvect[3].Set(polvect[3].x + 2.5f, polvect[3].y - 20.f, polvect[3].z - 2.5f);
+				}
+				yy += SB;
+			}
+		}
+	}
 
-	//	for (int ii = 0; ii < 4; ii++){
-	//		tlvertex3d tlv3d;
-	//		ProjectVertex(polvect[ii], pView->m_viewMatrix, &tlv3d);
-	//		vertex[ii].x = tlv3d.x;
-	//		vertex[ii].y = tlv3d.y;
-	//		vertex[ii].z = tlv3d.z;
-	//		vertex[ii].rhw = tlv3d.oow;
-	//	}
+	//other
+	for (std::list<CGameActor*>::iterator it = actorList.begin(); it != actorList.end(); it++)
+	{
+		float yy = BARB;
+		CGameActor *pGameActor = *it;
+		if (pGameActor){
+			for (std::list<s_skill_tm>::iterator it = temp_tmList.begin(); it != temp_tmList.end(); it++){
+				if (pGameActor->m_gid == it->id){
+					if (it->e_tick > timeGetTime()){
+						vector3d pointvecter;
+						float fx, fy, oow;
+						pointvecter.Set(0, yy, 0);
+						ProjectVertex(pGameActor->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
+						int sx, sy;
+						std::stringstream putname;
+						std::stringstream puttime;
+						sx = (int)fx;
+						sy = (int)fy;
+						unsigned long value;
+						float t1, t2;
+						int tm, ts;
+						t1 = (float)(it->e_tick - timeGetTime());
+						t2 = (float)(it->tick);
+						tm = ((int)t1 / 1000) / 60;
+						ts = ((int)t1 / 1000) % 60;
+						value = (unsigned long)((t1 / t2) * 1000);
+
+						ProjectVertexEx(pGameActor->m_pos, pointvecter, pView->m_viewMatrix, &fx, &fy, &oow);
+						{
+							static int sx = 0, sy = 0;
+							sx = (int)fx - 30; // +60 side of the true cast bar
+							sy = (int)fy - 3;
+							DrawGage(d3ddevice, sx, sy, 60, 6, value, D3DCOLOR_ARGB(0x00, 170, 170, 220), 0x96, 0);
+							
+							putname << it->name;
+							if (tm > 0){
+								puttime << std::setfill(' ') << std::setw(3) << tm << "'";
+								puttime << std::setfill('0') << std::setw(2) << ts << "''";
+							}
+							if (tm <= 0){
+								puttime << std::setfill(' ') << std::setw(4) << " ";
+								puttime << std::setfill(' ') << std::setw(2) << ts << "''";
+							}
+							sx += NAMEBX;
+							sy += NAMEBY;
+							m_pSFastFont->DrawText((LPSTR)putname.str().c_str(), sx, sy, D3DCOLOR_ARGB(230, 255, 255, 255), 0, NULL);
+							sx += TIMEBX;
+							sy += TIMEBY;
+							m_pSFastFont->DrawText((LPSTR)puttime.str().c_str(), sx, sy, D3DCOLOR_ARGB(150, 255, 255, 255), 1, NULL);
 
 
-	//	std::stringstream str;
-	//	str << std::endl<<std::endl;
-	//	for (int ii = 0; ii < 4; ii++){
-	//		str << "p[" << ii << "].x = " << std::setfill('0') << std::setw(8) << polvect[ii].x << ", ";
-	//		str << "p[" << ii << "].y = " << std::setfill('0') << std::setw(8) << polvect[ii].y << ", ";
-	//		str << "p[" << ii << "].z = " << std::setfill('0') << std::setw(8) << polvect[ii].z ;
-	//		str << std::endl;
-	//		str << "v[" << ii << "].x = " << std::setfill('0') << std::setw(8) << vertex[ii].x << ", ";
-	//		str << "v[" << ii << "].y = " << std::setfill('0') << std::setw(8) << vertex[ii].y << ", ";
-	//		str << "v[" << ii << "].z = " << std::setfill('0') << std::setw(8) << vertex[ii].z;
-	//		str << std::endl;
+						}
+						yy += SB;
+					}
 
+				}
+			}
+		}
+	}
+	//-----Delay-------
+	yy = 4.0f;
+	std::list<DELAY> tempList = dList;
+	for (std::list<DELAY>::iterator it = tempList.begin(); it != tempList.end();it++){
+		if (it->etick > timeGetTime()){
+			vector3d pointvecter;
+			float fx, fy, oow;
+			pointvecter.Set(0, yy, 0);
+			ProjectVertex(pPlayer->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
+			int sx, sy;
+			sx = (int)fx;
+			sy = (int)fy;
+			unsigned long value;
+			float t1, t2;
+			t1 = (float)it->etick - timeGetTime();
+			t2 = (float)it->tick;
+			value = (unsigned long)((t1 / t2) * 1000);
 
-	//	}
-	//	int sx, sy;
-	//	float fx, fy, oow;
-	//	ProjectVertex(pPlayer->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
-	//	sx = (int)fx;
-	//	sy = (int)fy;
-	//	m_pSFastFont->DrawText((LPSTR)str.str().c_str(), sx, sy, D3DCOLOR_ARGB(255, 255, 255, 255), 0, NULL);
-	//	//m_pSFastFont->Flush();
+			ProjectVertexEx(pPlayer->m_pos, pointvecter, pView->m_viewMatrix, &fx, &fy, &oow);
+			{
+				static int sx = 0, sy = 0;
+				sx = (int)fx - 30; // +60 side of the true cast bar
+				sy = (int)fy - 3;
+				DrawGage(d3ddevice, sx, sy, 60, 6, value, D3DCOLOR_ARGB(0x00, 180, 0, 0), 0xC8, 0);
+			}
+			yy += 1.0f;
+		}
+	}
+	m_pSFastFont->Flush();
+	//list erase
+	for (std::list<DELAY>::iterator it = dList.begin(); it != dList.end();){
+		if (it->etick < timeGetTime()){
+			it = dList.erase(it);
+		}
+		it++;
+	}
+	for (std::list<s_skill_tm>::iterator it = tmList.begin(); it != tmList.end();){
+		if (it->e_tick < timeGetTime()){
+			it = tmList.erase(it);
+		}
+		it++;
+	}
 
-	//	d3ddevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, D3DFVF_CPOLVERTEX, vertex, 4, 0);
-	//}
 
 }
 
@@ -1166,6 +1258,11 @@ void CRoCodeBind::InitPacketHandler(void)
 {
 	m_packethandler[HEADER_ZC_SAY_DIALOG] = &CRoCodeBind::PacketHandler_Cz_Say_Dialog;
 	m_packethandler[HEADER_ZC_MENU_LIST] = &CRoCodeBind::PacketHandler_Cz_Menu_List;
+	m_packethandler[HEADER_ZC_SKILL_POSTDELAY] = &CRoCodeBind::PacketHandler_Cz_SKILL_POSTDELAY;
+	m_packethandler[HEADER_ZC_MSG_STATE_CHANGE2] = &CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2;
+	m_packethandler[HEADER_ZC_MSG_STATE_CHANGE] = &CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE;
+	m_packethandler[HEADER_ZC_NOTIFY_EFFECT2] = &CRoCodeBind::PacketHandler_Cz_NOTIFY_EFFECT2;
+
 }
 
 void CRoCodeBind::PacketProc(const char *packetdata)
@@ -1186,14 +1283,15 @@ void CRoCodeBind::PacketProc(const char *packetdata)
 
 	// output packet log
 	if (g_pSharedData && g_pSharedData->write_packetlog){
-		std::stringstream str;
-		str << "[" << std::setfill('0') << std::setw(8) << timeGetTime() << "] R ";
-		for (int ii = 0; ii < (int)packetlength; ii++)
-			str << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << (int)(unsigned char)packetdata[ii] << " ";
-		str << std::flush;
-		DEBUG_LOGGING_NORMAL((str.str().c_str()));
+		if (opcode == HEADER_ZC_NOTIFY_EFFECT2 || opcode == HEADER_ZC_PAR_CHANGE){
+			std::stringstream str;
+			str << "[" << std::setfill('0') << std::setw(8) << timeGetTime() << "]R ";
+			for (int ii = 0; ii < (int)packetlength; ii++)
+				str << std::setfill('0') << std::setw(2) << std::hex << std::uppercase << (int)(unsigned char)packetdata[ii] << " ";
+			str << std::flush;
+			DEBUG_LOGGING_NORMAL((str.str().c_str()));
+		}
 	}
-
 }
 
 void CRoCodeBind::SendMessageToNPCLogger(const char *src, int size)
@@ -1323,8 +1421,1520 @@ void CRoCodeBind::PacketHandler_Cz_Menu_List(const char *packetdata)
 	}
 
 }
+void CRoCodeBind::PacketHandler_Cz_SKILL_POSTDELAY(const char *packetdata)
+{
+	if (g_pSharedData->test02 == FALSE)return;
+	PACKET_CZ_SKILL_POSTDELAY* p = (PACKET_CZ_SKILL_POSTDELAY*)packetdata;
+	DELAY d;
+	d.PacketType=p->PacketType;
+	d.skill_id=p->skill_id;
+	d.tick=p->tick;
+	d.etick = p->tick + timeGetTime();
+	dList.push_back(d);
 
+}
+void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
+	if (g_pSharedData->test02 == FALSE)return;
+	PACKET_CZ_MSG_STATE_CHANGE2* p = (PACKET_CZ_MSG_STATE_CHANGE2*)packetdata;
+	std::stringstream str;
+	s_skill_tm tm;
+	tm.type = p->type;
+	tm.id = p->id;
+	tm.tick = p->tick;
+	tm.e_tick = p->tick + timeGetTime();
+	tm.v1 = p->v1;
 
+	for (std::list<s_skill_tm>::iterator it = tmList.begin(); it != tmList.end();){
+		if (it->id == tm.id && it->type == tm.type){
+			it = tmList.erase(it);
+		}
+		it++;
+	}
+
+	if (p->flag == 1){
+		switch (tm.type)
+		{
+		case SI_BLANK:
+			break;
+		case SI_PROVOKE:
+			break;
+		case SI_ENDURE:
+			str << "Endure";
+			tm.name = str.str();
+			tmList.push_back(tm);
+			break;
+		case SI_ENERGYCOAT:
+			break;
+		case SI_LOUD:
+			break;
+		case SI_ANGELUS:
+			str << "Ange";
+			str << tm.v1;
+			tm.name = str.str();
+			tmList.push_back(tm);
+			break;
+		case SI_BLESSING:
+			str << "Bless";
+			str << tm.v1;
+			tm.name = str.str();
+			tmList.push_back(tm);
+			break;
+		case SI_SIGNUMCRUCIS:
+			break;
+		case SI_INCREASEAGI:
+			str << "IA";
+			str << tm.v1;
+			tm.name = str.str();
+
+			tmList.push_back(tm);
+			break;
+		case SI_DECREASEAGI:
+			break;
+		case SI_SLOWPOISON:
+			break;
+		case SI_HIDING:
+			break;
+		case SI_TWOHANDQUICKEN:
+			break;
+		case SI_RIDING:
+			break;
+		case SI_AUTOCOUNTER:
+			break;
+		case SI_QUAGMIRE:
+			break;
+		case SI_ADRENALINE:
+			break;
+		case SI_WEAPONPERFECTION:
+			break;
+		case SI_OVERTHRUST:
+			break;
+		case SI_MAXIMIZEPOWER:
+			break;
+		case SI_IMPOSITIO:
+			break;
+		case SI_SUFFRAGIUM:
+			str << "Suffra";
+			str << tm.v1;
+			tm.name = str.str();
+
+			tmList.push_back(tm);
+			break;
+		case SI_ASPERSIO:
+			str << "Aspe";
+			str << tm.v1;
+			tm.name = str.str();
+
+			tmList.push_back(tm);
+			break;
+		case SI_BENEDICTIO:
+			break;
+		case SI_KYRIE:
+			str << "Kyrie";
+			str << "[" << tm.v1 << "]";
+			tm.name = str.str();
+
+			tmList.push_back(tm);
+			break;
+		case SI_MAGNIFICAT:
+			str << "Magni";
+			str << tm.v1;
+			tm.name = str.str();
+
+			tmList.push_back(tm);
+			break;
+		case SI_GLORIA:
+			str << "Gloria";
+			str << tm.v1;
+			tm.name = str.str();
+
+			tmList.push_back(tm);
+			break;
+		case SI_AETERNA:
+			break;
+		case SI_CLOAKING:
+			break;
+		case SI_ENCPOISON:
+			break;
+		case SI_POISONREACT:
+			break;
+		case SI_FALCON:
+			break;
+		case SI_CONCENTRATE:
+			break;
+		case SI_TRICKDEAD:
+			break;
+		case SI_BROKENARMOR:
+			break;
+		case SI_BROKENWEAPON:
+			break;
+		case SI_HALLUCINATION:
+			break;
+		case SI_WEIGHT50:
+			break;
+		case SI_WEIGHT90:
+			break;
+		case SI_ASPDPOTION0:
+			break;
+		case SI_ASPDPOTION1:
+			break;
+		case SI_ASPDPOTION2:
+			break;
+		case SI_ASPDPOTIONINFINITY:
+			break;
+		case SI_SPEEDPOTION1:
+			break;
+		case SI_SPLASHER:
+			break;
+		case SI_ANKLESNARE:
+			break;
+		case SI_ACTIONDELAY:
+			break;
+		case SI_BARRIER:
+			break;
+		case SI_STRIPWEAPON:
+			break;
+		case SI_STRIPSHIELD:
+			break;
+		case SI_STRIPARMOR:
+			break;
+		case SI_STRIPHELM:
+			break;
+		case SI_CP_WEAPON:
+			break;
+		case SI_CP_SHIELD:
+			break;
+		case SI_CP_ARMOR:
+			break;
+		case SI_CP_HELM:
+			break;
+		case SI_AUTOGUARD:
+			break;
+		case SI_REFLECTSHIELD:
+			break;
+		case SI_DEVOTION:
+			break;
+		case SI_PROVIDENCE:
+			break;
+		case SI_DEFENDER:
+			break;
+		case SI_MAGICROD:
+			break;
+		case SI_AUTOSPELL:
+			break;
+		case SI_SPEARQUICKEN:
+			break;
+		case SI_BDPLAYING:
+			break;
+		case SI_WHISTLE:
+			break;
+		case SI_ASSASSINCROSS:
+			break;
+		case SI_POEMBRAGI:
+			break;
+		case SI_APPLEIDUN:
+			break;
+		case SI_HUMMING:
+			break;
+		case SI_DONTFORGETME:
+			break;
+		case SI_FORTUNEKISS:
+			break;
+		case SI_SERVICEFORYOU:
+			break;
+		case SI_RICHMANKIM:
+			break;
+		case SI_ETERNALCHAOS:
+			break;
+		case SI_DRUMBATTLEFIELD:
+			break;
+		case SI_RINGNIBELUNGEN:
+			break;
+		case SI_ROKISWEIL:
+			break;
+		case SI_INTOABYSS:
+			break;
+		case SI_SIEGFRIED:
+			break;
+		case SI_BLADESTOP:
+			break;
+		case SI_EXPLOSIONSPIRITS:
+			break;
+		case SI_STEELBODY:
+			break;
+		case SI_EXTREMITYFIST:
+			break;
+		case SI_FIREWEAPON:
+			break;
+		case SI_WATERWEAPON:
+			break;
+		case SI_WINDWEAPON:
+			break;
+		case SI_EARTHWEAPON:
+			break;
+		case SI_STOP:
+			break;
+		case SI_UNDEAD:
+			break;
+		case SI_AURABLADE:
+			break;
+		case SI_PARRYING:
+			break;
+		case SI_CONCENTRATION:
+			break;
+		case SI_TENSIONRELAX:
+			break;
+		case SI_BERSERK:
+			break;
+		case SI_GOSPEL:
+			break;
+		case SI_ASSUMPTIO:
+			break;
+		case SI_BASILICA:
+			break;
+		case SI_LANDENDOW:
+			break;
+		case SI_MAGICPOWER:
+			str << "Magni";
+			str << tm.v1;
+			tm.name = str.str();
+			tmList.push_back(tm);
+			break;
+		case SI_EDP:
+			break;
+		case SI_TRUESIGHT:
+			break;
+		case SI_WINDWALK:
+			break;
+		case SI_MELTDOWN:
+			break;
+		case SI_CARTBOOST:
+			break;
+		case SI_CHASEWALK:
+			break;
+		case SI_REJECTSWORD:
+			break;
+		case SI_MARIONETTE:
+			break;
+		case SI_MARIONETTE2:
+			break;
+		case SI_MOONLIT:
+			break;
+		case SI_BLEEDING:
+			break;
+		case SI_JOINTBEAT:
+			break;
+		case SI_MINDBREAKER:
+			break;
+		case SI_MEMORIZE:
+			break;
+		case SI_FOGWALL:
+			break;
+		case SI_SPIDERWEB:
+			break;
+		case SI_BABY:
+			break;
+		case SI_AUTOBERSERK:
+			break;
+		case SI_RUN:
+			break;
+		case SI_BUMP:
+			break;
+		case SI_READYSTORM:
+			break;
+		case SI_READYDOWN:
+			break;
+		case SI_READYTURN:
+			break;
+		case SI_READYCOUNTER:
+			break;
+		case SI_DODGE:
+			break;
+		case SI_SPURT:
+			break;
+		case SI_SHADOWWEAPON:
+			break;
+		case SI_ADRENALINE2:
+			break;
+		case SI_GHOSTWEAPON:
+			break;
+		case SI_SPIRIT:
+			break;
+		case SI_PLUSATTACKPOWER:
+			break;
+		case SI_PLUSMAGICPOWER:
+			break;
+		case SI_DEVIL:
+			break;
+		case SI_KAITE:
+			break;
+		case SI_SWOO:
+			break;
+		case SI_KAIZEL:
+			break;
+		case SI_KAAHI:
+			break;
+		case SI_KAUPE:
+			break;
+		case SI_SMA:
+			break;
+		case SI_NIGHT:
+			break;
+		case SI_ONEHAND:
+			break;
+		case SI_WARM:
+			break;
+		case SI_SUN_COMFORT:
+			break;
+		case SI_MOON_COMFORT:
+			break;
+		case SI_STAR_COMFORT:
+			break;
+		case SI_GDSKILL_BATTLEORDER:
+			break;
+		case SI_GDSKILL_REGENERATION:
+			break;
+		case SI_PRESERVE:
+			break;
+		case SI_CHASEWALK2:
+			break;
+		case SI_INTRAVISION:
+			break;
+		case SI_DOUBLECAST:
+			break;
+		case SI_GRAVITATION:
+			break;
+		case SI_MAXOVERTHRUST:
+			break;
+		case SI_LONGING:
+			break;
+		case SI_HERMODE:
+			break;
+		case SI_TAROT:
+			break;
+		case SI_SHRINK:
+			break;
+		case SI_SIGHTBLASTER:
+			break;
+		case SI_WINKCHARM:
+			break;
+		case SI_CLOSECONFINE:
+			break;
+		case SI_CLOSECONFINE2:
+			break;
+		case SI_MADNESSCANCEL:
+			break;
+		case SI_GATLINGFEVER:
+			break;
+		case SI_EARTHSCROLL:
+			break;
+		case SI_UTSUSEMI:
+			break;
+		case SI_BUNSINJYUTSU:
+			break;
+		case SI_NEN:
+			break;
+		case SI_ADJUSTMENT:
+			break;
+		case SI_ACCURACY:
+			break;
+		case SI_FOODSTR:
+			break;
+		case SI_FOODAGI:
+			break;
+		case SI_FOODVIT:
+			break;
+		case SI_FOODDEX:
+			break;
+		case SI_FOODINT:
+			break;
+		case SI_FOODLUK:
+			break;
+		case SI_FOODFLEE:
+			break;
+		case SI_FOODHIT:
+			break;
+		case SI_FOODCRI:
+			break;
+		case SI_EXPBOOST:
+			break;
+		case SI_LIFEINSURANCE:
+			break;
+		case SI_ITEMBOOST:
+			break;
+		case SI_BOSSMAPINFO:
+			break;
+		case SI_FOOD_STR_CASH:
+			break;
+		case SI_FOOD_AGI_CASH:
+			break;
+		case SI_FOOD_VIT_CASH:
+			break;
+		case SI_FOOD_DEX_CASH:
+			break;
+		case SI_FOOD_INT_CASH:
+			break;
+		case SI_FOOD_LUK_CASH:
+			break;
+		case SI_MERC_FLEEUP:
+			break;
+		case SI_MERC_ATKUP:
+			break;
+		case SI_MERC_HPUP:
+			break;
+		case SI_MERC_SPUP:
+			break;
+		case SI_MERC_HITUP:
+			break;
+		case SI_SLOWCAST:
+			break;
+		case SI_CRITICALWOUND:
+			break;
+		case SI_MOVHASTE_HORSE:
+			break;
+		case SI_DEF_RATE:
+			break;
+		case SI_MDEF_RATE:
+			break;
+		case SI_INCHEALRATE:
+			break;
+		case SI_S_LIFEPOTION:
+			break;
+		case SI_L_LIFEPOTION:
+			break;
+		case SI_INCCRI:
+			break;
+		case SI_PLUSAVOIDVALUE:
+			break;
+		case SI_ATKER_BLOOD:
+			break;
+		case SI_TARGET_BLOOD:
+			break;
+		case SI_ARMOR_PROPERTY:
+			break;
+		case SI_HELLPOWER:
+			break;
+		case SI_STEAMPACK:
+			break;
+		case SI_INVINCIBLE:
+			break;
+		case SI_CASH_PLUSONLYJOBEXP:
+			break;
+		case SI_PARTYFLEE:
+			break;
+		case SI_ANGEL_PROTECT:
+			break;
+		case SI_ENDURE_MDEF:
+			break;
+		case SI_ENCHANTBLADE:
+			break;
+		case SI_DEATHBOUND:
+			break;
+		case SI_REFRESH:
+			break;
+		case SI_GIANTGROWTH:
+			break;
+		case SI_STONEHARDSKIN:
+			break;
+		case SI_VITALITYACTIVATION:
+			break;
+		case SI_FIGHTINGSPIRIT:
+			break;
+		case SI_ABUNDANCE:
+			break;
+		case SI_REUSE_MILLENNIUMSHIELD:
+			break;
+		case SI_REUSE_CRUSHSTRIKE:
+			break;
+		case SI_REUSE_REFRESH:
+			break;
+		case SI_REUSE_STORMBLAST:
+			break;
+		case SI_VENOMIMPRESS:
+			break;
+		case SI_EPICLESIS:
+			break;
+		case SI_ORATIO:
+			break;
+		case SI_LAUDAAGNUS:
+			break;
+		case SI_LAUDARAMUS:
+			break;
+		case SI_CLOAKINGEXCEED:
+			break;
+		case SI_HALLUCINATIONWALK:
+			break;
+		case SI_HALLUCINATIONWALK_POSTDELAY:
+			break;
+		case SI_RENOVATIO:
+			break;
+		case SI_WEAPONBLOCKING:
+			break;
+		case SI_WEAPONBLOCKING_POSTDELAY:
+			break;
+		case SI_ROLLINGCUTTER:
+			break;
+		case SI_EXPIATIO:
+			break;
+		case SI_POISONINGWEAPON:
+			break;
+		case SI_TOXIN:
+			break;
+		case SI_PARALYSE:
+			break;
+		case SI_VENOMBLEED:
+			break;
+		case SI_MAGICMUSHROOM:
+			break;
+		case SI_DEATHHURT:
+			break;
+		case SI_PYREXIA:
+			break;
+		case SI_OBLIVIONCURSE:
+			break;
+		case SI_LEECHESEND:
+			break;
+		case SI_DUPLELIGHT:
+			break;
+		case SI_FROSTMISTY:
+			break;
+		case SI_FEARBREEZE:
+			break;
+		case SI_ELECTRICSHOCKER:
+			break;
+		case SI_MARSHOFABYSS:
+			break;
+		case SI_RECOGNIZEDSPELL:
+			break;
+		case SI_STASIS:
+			break;
+		case SI_WUGRIDER:
+			break;
+		case SI_WUGDASH:
+			break;
+		case SI_WUGBITE:
+			break;
+		case SI_CAMOUFLAGE:
+			break;
+		case SI_ACCELERATION:
+			break;
+		case SI_HOVERING:
+			break;
+		case SI_SPHERE_1:
+			break;
+		case SI_SPHERE_2:
+			break;
+		case SI_SPHERE_3:
+			break;
+		case SI_SPHERE_4:
+			break;
+		case SI_SPHERE_5:
+			break;
+		case SI_MVPCARD_TAOGUNKA:
+			break;
+		case SI_MVPCARD_MISTRESS:
+			break;
+		case SI_MVPCARD_ORCHERO:
+			break;
+		case SI_MVPCARD_ORCLORD:
+			break;
+		case SI_OVERHEAT_LIMITPOINT:
+			break;
+		case SI_OVERHEAT:
+			break;
+		case SI_SHAPESHIFT:
+			break;
+		case SI_INFRAREDSCAN:
+			break;
+		case SI_MAGNETICFIELD:
+			break;
+		case SI_NEUTRALBARRIER:
+			break;
+		case SI_NEUTRALBARRIER_MASTER:
+			break;
+		case SI_STEALTHFIELD:
+			break;
+		case SI_STEALTHFIELD_MASTER:
+			break;
+		case SI_MANU_ATK:
+			break;
+		case SI_MANU_DEF:
+			break;
+		case SI_SPL_ATK:
+			break;
+		case SI_SPL_DEF:
+			break;
+		case SI_REPRODUCE:
+			break;
+		case SI_MANU_MATK:
+			break;
+		case SI_SPL_MATK:
+			break;
+		case SI_STR_SCROLL:
+			break;
+		case SI_INT_SCROLL:
+			break;
+		case SI_LG_REFLECTDAMAGE:
+			break;
+		case SI_FORCEOFVANGUARD:
+			break;
+		case SI_BUCHEDENOEL:
+			break;
+		case SI_AUTOSHADOWSPELL:
+			break;
+		case SI_SHADOWFORM:
+			break;
+		case SI_RAID:
+			break;
+		case SI_SHIELDSPELL_DEF:
+			break;
+		case SI_SHIELDSPELL_MDEF:
+			break;
+		case SI_SHIELDSPELL_REF:
+			break;
+		case SI_BODYPAINT:
+			break;
+		case SI_EXEEDBREAK:
+			break;
+		case SI_ADORAMUS:
+			break;
+		case SI_PRESTIGE:
+			break;
+		case SI_INVISIBILITY:
+			break;
+		case SI_DEADLYINFECT:
+			break;
+		case SI_BANDING:
+			break;
+		case SI_EARTHDRIVE:
+			break;
+		case SI_INSPIRATION:
+			break;
+		case SI_ENERVATION:
+			break;
+		case SI_GROOMY:
+			break;
+		case SI_RAISINGDRAGON:
+			break;
+		case SI_IGNORANCE:
+			break;
+		case SI_LAZINESS:
+			break;
+		case SI_LIGHTNINGWALK:
+			break;
+		case SI_ACARAJE:
+			break;
+		case SI_UNLUCKY:
+			break;
+		case SI_CURSEDCIRCLE_ATKER:
+			break;
+		case SI_CURSEDCIRCLE_TARGET:
+			break;
+		case SI_WEAKNESS:
+			break;
+		case SI_CRESCENTELBOW:
+			break;
+		case SI_NOEQUIPACCESSARY:
+			break;
+		case SI_STRIPACCESSARY:
+			break;
+		case SI_MANHOLE:
+			break;
+		case SI_POPECOOKIE:
+			break;
+		case SI_FALLENEMPIRE:
+			break;
+		case SI_GENTLETOUCH_ENERGYGAIN:
+			break;
+		case SI_GENTLETOUCH_CHANGE:
+			break;
+		case SI_GENTLETOUCH_REVITALIZE:
+			break;
+		case SI_BLOODYLUST:
+			break;
+		case SI_SWINGDANCE:
+			break;
+		case SI_SYMPHONYOFLOVERS:
+			break;
+		case SI_PROPERTYWALK:
+			break;
+		case SI_SPELLFIST:
+			break;
+		case SI_NETHERWORLD:
+			break;
+		case SI_VOICEOFSIREN:
+			break;
+		case SI_DEEPSLEEP:
+			break;
+		case SI_SIRCLEOFNATURE:
+			break;
+		case SI_COLD:
+			break;
+		case SI_GLOOMYDAY:
+			break;
+		case SI_SONGOFMANA:
+			break;
+		case SI_CLOUDKILL:
+			break;
+		case SI_DANCEWITHWUG:
+			break;
+		case SI_RUSHWINDMILL:
+			break;
+		case SI_ECHOSONG:
+			break;
+		case SI_HARMONIZE:
+			break;
+		case SI_STRIKING:
+			break;
+		case SI_WARMER:
+			break;
+		case SI_MOONLITSERENADE:
+			break;
+		case SI_SATURDAYNIGHTFEVER:
+			break;
+		case SI_SITDOWN_FORCE:
+			break;
+		case SI_ANALYZE:
+			break;
+		case SI_LERADSDEW:
+			break;
+		case SI_MELODYOFSINK:
+			break;
+		case SI_WARCRYOFBEYOND:
+			break;
+		case SI_UNLIMITEDHUMMINGVOICE:
+			break;
+		case SI_SPELLBOOK1:
+			break;
+		case SI_SPELLBOOK2:
+			break;
+		case SI_SPELLBOOK3:
+			break;
+		case SI_FREEZE_SP:
+			break;
+		case SI_GN_TRAINING_SWORD:
+			break;
+		case SI_GN_REMODELING_CART:
+			break;
+		case SI_GN_CARTBOOST:
+			break;
+		case SI_FIXEDCASTINGTM_REDUCE:
+			break;
+		case SI_THORNTRAP:
+			break;
+		case SI_BLOODSUCKER:
+			break;
+		case SI_SPORE_EXPLOSION:
+			break;
+		case SI_DEMONIC_FIRE:
+			break;
+		case SI_FIRE_EXPANSION_SMOKE_POWDER:
+			break;
+		case SI_FIRE_EXPANSION_TEAR_GAS:
+			break;
+		case SI_BLOCKING_PLAY:
+			break;
+		case SI_MANDRAGORA:
+			break;
+		case SI_ACTIVATE:
+			break;
+		case SI_SECRAMENT:
+			break;
+		case SI_ASSUMPTIO2:
+			break;
+		case SI_TK_SEVENWIND:
+			break;
+		case SI_LIMIT_ODINS_RECALL:
+			break;
+		case SI_STOMACHACHE:
+			break;
+		case SI_MYSTERIOUS_POWDER:
+			break;
+		case SI_MELON_BOMB:
+			break;
+		case SI_BANANA_BOMB_SITDOWN_POSTDELAY:
+			break;
+		case SI_PROMOTE_HEALTH_RESERCH:
+			break;
+		case SI_ENERGY_DRINK_RESERCH:
+			break;
+		case SI_EXTRACT_WHITE_POTION_Z:
+			break;
+		case SI_VITATA_500:
+			break;
+		case SI_EXTRACT_SALAMINE_JUICE:
+			break;
+		case SI_BOOST500:
+			break;
+		case SI_FULL_SWING_K:
+			break;
+		case SI_MANA_PLUS:
+			break;
+		case SI_MUSTLE_M:
+			break;
+		case SI_LIFE_FORCE_F:
+			break;
+		case SI_VACUUM_EXTREME:
+			break;
+		case SI_SAVAGE_STEAK:
+			break;
+		case SI_COCKTAIL_WARG_BLOOD:
+			break;
+		case SI_MINOR_BBQ:
+			break;
+		case SI_SIROMA_ICE_TEA:
+			break;
+		case SI_DROCERA_HERB_STEAMED:
+			break;
+		case SI_PUTTI_TAILS_NOODLES:
+			break;
+		case SI_BANANA_BOMB:
+			break;
+		case SI_SUMMON_AGNI:
+			break;
+		case SI_SPELLBOOK4:
+			break;
+		case SI_SPELLBOOK5:
+			break;
+		case SI_SPELLBOOK6:
+			break;
+		case SI_SPELLBOOK7:
+			break;
+		case SI_ELEMENTAL_AGGRESSIVE:
+			break;
+		case SI_RETURN_TO_ELDICASTES:
+			break;
+		case SI_BANDING_DEFENCE:
+			break;
+		case SI_SKELSCROLL:
+			break;
+		case SI_DISTRUCTIONSCROLL:
+			break;
+		case SI_ROYALSCROLL:
+			break;
+		case SI_IMMUNITYSCROLL:
+			break;
+		case SI_MYSTICSCROLL:
+			break;
+		case SI_BATTLESCROLL:
+			break;
+		case SI_ARMORSCROLL:
+			break;
+		case SI_FREYJASCROLL:
+			break;
+		case SI_SOULSCROLL:
+			break;
+		case SI_CIRCLE_OF_FIRE:
+			break;
+		case SI_CIRCLE_OF_FIRE_OPTION:
+			break;
+		case SI_FIRE_CLOAK:
+			break;
+		case SI_FIRE_CLOAK_OPTION:
+			break;
+		case SI_WATER_SCREEN:
+			break;
+		case SI_WATER_SCREEN_OPTION:
+			break;
+		case SI_WATER_DROP:
+			break;
+		case SI_WATER_DROP_OPTION:
+			break;
+		case SI_WIND_STEP:
+			break;
+		case SI_WIND_STEP_OPTION:
+			break;
+		case SI_WIND_CURTAIN:
+			break;
+		case SI_WIND_CURTAIN_OPTION:
+			break;
+		case SI_WATER_BARRIER:
+			break;
+		case SI_ZEPHYR:
+			break;
+		case SI_SOLID_SKIN:
+			break;
+		case SI_SOLID_SKIN_OPTION:
+			break;
+		case SI_STONE_SHIELD:
+			break;
+		case SI_STONE_SHIELD_OPTION:
+			break;
+		case SI_POWER_OF_GAIA:
+			break;
+		case SI_PYROTECHNIC:
+			break;
+		case SI_PYROTECHNIC_OPTION:
+			break;
+		case SI_HEATER:
+			break;
+		case SI_HEATER_OPTION:
+			break;
+		case SI_TROPIC:
+			break;
+		case SI_TROPIC_OPTION:
+			break;
+		case SI_AQUAPLAY:
+			break;
+		case SI_AQUAPLAY_OPTION:
+			break;
+		case SI_COOLER:
+			break;
+		case SI_COOLER_OPTION:
+			break;
+		case SI_CHILLY_AIR:
+			break;
+		case SI_CHILLY_AIR_OPTION:
+			break;
+		case SI_GUST:
+			break;
+		case SI_GUST_OPTION:
+			break;
+		case SI_BLAST:
+			break;
+		case SI_BLAST_OPTION:
+			break;
+		case SI_WILD_STORM:
+			break;
+		case SI_WILD_STORM_OPTION:
+			break;
+		case SI_PETROLOGY:
+			break;
+		case SI_PETROLOGY_OPTION:
+			break;
+		case SI_CURSED_SOIL:
+			break;
+		case SI_CURSED_SOIL_OPTION:
+			break;
+		case SI_UPHEAVAL:
+			break;
+		case SI_UPHEAVAL_OPTION:
+			break;
+		case SI_TIDAL_WEAPON:
+			break;
+		case SI_TIDAL_WEAPON_OPTION:
+			break;
+		case SI_ROCK_CRUSHER:
+			break;
+		case SI_ROCK_CRUSHER_ATK:
+			break;
+		case SI_FIRE_INSIGNIA:
+			break;
+		case SI_WATER_INSIGNIA:
+			break;
+		case SI_WIND_INSIGNIA:
+			break;
+		case SI_EARTH_INSIGNIA:
+			break;
+		case SI_EQUIPED_FLOOR:
+			break;
+		case SI_GUARDIAN_RECALL:
+			break;
+		case SI_MORA_BUFF:
+			break;
+		case SI_REUSE_LIMIT_G:
+			break;
+		case SI_REUSE_LIMIT_H:
+			break;
+		case SI_NEEDLE_OF_PARALYZE:
+			break;
+		case SI_PAIN_KILLER:
+			break;
+		case SI_G_LIFEPOTION:
+			break;
+		case SI_VITALIZE_POTION:
+			break;
+		case SI_LIGHT_OF_REGENE:
+			break;
+		case SI_OVERED_BOOST:
+			break;
+		case SI_SILENT_BREEZE:
+			break;
+		case SI_ODINS_POWER:
+			break;
+		case SI_STYLE_CHANGE:
+			break;
+		case SI_SONIC_CLAW_POSTDELAY:
+			break;
+		case SI_SILVERVEIN_RUSH_POSTDELAY:
+			break;
+		case SI_MIDNIGHT_FRENZY_POSTDELAY:
+			break;
+		case SI_GOLDENE_FERSE:
+			break;
+		case SI_ANGRIFFS_MODUS:
+			break;
+		case SI_TINDER_BREAKER:
+			break;
+		case SI_TINDER_BREAKER_POSTDELAY:
+			break;
+		case SI_CBC:
+			break;
+		case SI_CBC_POSTDELAY:
+			break;
+		case SI_EQC:
+			break;
+		case SI_MAGMA_FLOW:
+			break;
+		case SI_GRANITIC_ARMOR:
+			break;
+		case SI_PYROCLASTIC:
+			break;
+		case SI_VOLCANIC_ASH:
+			break;
+		case SI_SPIRITS_SAVEINFO1:
+			break;
+		case SI_SPIRITS_SAVEINFO2:
+			break;
+		case SI_MAGIC_CANDY:
+			break;
+		case SI_SEARCH_STORE_INFO:
+			break;
+		case SI_ALL_RIDING:
+			break;
+		case SI_ALL_RIDING_REUSE_LIMIT:
+			break;
+		case SI_MACRO:
+			break;
+		case SI_MACRO_POSTDELAY:
+			break;
+		case SI_BEER_BOTTLE_CAP:
+			break;
+		case SI_OVERLAPEXPUP:
+			break;
+		case SI_PC_IZ_DUN05:
+			break;
+		case SI_CRUSHSTRIKE:
+			break;
+		case SI_MONSTER_TRANSFORM:
+			break;
+		case SI_SIT:
+			break;
+		case SI_ONAIR:
+			break;
+		case SI_MTF_ASPD:
+			break;
+		case SI_MTF_RANGEATK:
+			break;
+		case SI_MTF_MATK:
+			break;
+		case SI_MTF_MLEATKED:
+			break;
+		case SI_MTF_CRIDAMAGE:
+			break;
+		case SI_REUSE_LIMIT_MTF:
+			break;
+		case SI_MACRO_PERMIT:
+			break;
+		case SI_MACRO_PLAY:
+			break;
+		case SI_SKF_CAST:
+			break;
+		case SI_SKF_ASPD:
+			break;
+		case SI_SKF_ATK:
+			break;
+		case SI_SKF_MATK:
+			break;
+		case SI_REWARD_PLUSONLYJOBEXP:
+			break;
+		case SI_HANDICAPSTATE_NORECOVER:
+			break;
+		case SI_SET_NUM_DEF:
+			break;
+		case SI_SET_NUM_MDEF:
+			break;
+		case SI_SET_PER_DEF:
+			break;
+		case SI_SET_PER_MDEF:
+			break;
+		case SI_PARTYBOOKING_SEARCH_DEALY:
+			break;
+		case SI_PARTYBOOKING_REGISTER_DEALY:
+			break;
+		case SI_PERIOD_TIME_CHECK_DETECT_SKILL:
+			break;
+		case SI_KO_JYUMONJIKIRI:
+			break;
+		case SI_MEIKYOUSISUI:
+			break;
+		case SI_ATTHASTE_CASH:
+			break;
+		case SI_EQUIPPED_DIVINE_ARMOR:
+			break;
+		case SI_EQUIPPED_HOLY_ARMOR:
+			break;
+		case SI_2011RWC:
+			break;
+		case SI_KYOUGAKU:
+			break;
+		case SI_IZAYOI:
+			break;
+		case SI_ZENKAI:
+			break;
+		case SI_KG_KAGEHUMI:
+			break;
+		case SI_KYOMU:
+			break;
+		case SI_KAGEMUSYA:
+			break;
+		case SI_ZANGETSU:
+			break;
+		case SI_PHI_DEMON:
+			break;
+		case SI_GENSOU:
+			break;
+		case SI_AKAITSUKI:
+			break;
+		case SI_TETANY:
+			break;
+		case SI_GM_BATTLE:
+			break;
+		case SI_GM_BATTLE2:
+			break;
+		case SI_2011RWC_SCROLL:
+			break;
+		case SI_ACTIVE_MONSTER_TRANSFORM:
+			break;
+		case SI_MYSTICPOWDER:
+			break;
+		case SI_ECLAGE_RECALL:
+			break;
+		case SI_ENTRY_QUEUE_APPLY_DELAY:
+			break;
+		case SI_REUSE_LIMIT_ECL:
+			break;
+		case SI_M_LIFEPOTION:
+			break;
+		case SI_ENTRY_QUEUE_NOTIFY_ADMISSION_TIME_OUT:
+			break;
+		case SI_UNKNOWN_NAME:
+			break;
+		case SI_ON_PUSH_CART:
+			break;
+		case SI_HAT_EFFECT:
+			break;
+		case SI_FLOWER_LEAF:
+			break;
+		case SI_RAY_OF_PROTECTION:
+			break;
+		case SI_GLASTHEIM_ATK:
+			break;
+		case SI_GLASTHEIM_DEF:
+			break;
+		case SI_GLASTHEIM_HEAL:
+			break;
+		case SI_GLASTHEIM_HIDDEN:
+			break;
+		case SI_GLASTHEIM_STATE:
+			break;
+		case SI_GLASTHEIM_ITEMDEF:
+			break;
+		case SI_GLASTHEIM_HPSP:
+			break;
+		case SI_HOMUN_SKILL_POSTDELAY:
+			break;
+		case SI_ALMIGHTY:
+			break;
+		case SI_GVG_GIANT:
+			break;
+		case SI_GVG_GOLEM:
+			break;
+		case SI_GVG_STUN:
+			break;
+		case SI_GVG_STONE:
+			break;
+		case SI_GVG_FREEZ:
+			break;
+		case SI_GVG_SLEEP:
+			break;
+		case SI_GVG_CURSE:
+			break;
+		case SI_GVG_SILENCE:
+			break;
+		case SI_GVG_BLIND:
+			break;
+		case SI_CLIENT_ONLY_EQUIP_ARROW:
+			break;
+		case SI_CLAN_INFO:
+			break;
+		case SI_JP_EVENT01:
+			break;
+		case SI_JP_EVENT02:
+			break;
+		case SI_JP_EVENT03:
+			break;
+		case SI_JP_EVENT04:
+			break;
+		case SI_TELEPORT_FIXEDCASTINGDELAY:
+			break;
+		case SI_GEFFEN_MAGIC1:
+			break;
+		case SI_GEFFEN_MAGIC2:
+			break;
+		case SI_GEFFEN_MAGIC3:
+			break;
+		case SI_QUEST_BUFF1:
+			break;
+		case SI_QUEST_BUFF2:
+			break;
+		case SI_QUEST_BUFF3:
+			break;
+		case SI_REUSE_LIMIT_RECALL:
+			break;
+		case SI_SAVEPOSITION:
+			break;
+		case SI_HANDICAPSTATE_ICEEXPLO:
+			break;
+		case SI_FENRIR_CARD:
+			break;
+		case SI_REUSE_LIMIT_ASPD_POTION:
+			break;
+		case SI_MAXPAIN:
+			break;
+		case SI_PC_STOP:
+			break;
+		case SI_FRIGG_SONG:
+			break;
+		case SI_OFFERTORIUM:
+			break;
+		case SI_TELEKINESIS_INTENSE:
+			break;
+		case SI_MOONSTAR:
+			break;
+		case SI_STRANGELIGHTS:
+			break;
+		case SI_FULL_THROTTLE:
+			break;
+		case SI_REBOUND:
+			break;
+		case SI_UNLIMIT:
+			break;
+		case SI_KINGS_GRACE:
+			break;
+		case SI_ITEM_ATKMAX:
+			break;
+		case SI_ITEM_ATKMIN:
+			break;
+		case SI_ITEM_MATKMAX:
+			break;
+		case SI_ITEM_MATKMIN:
+			break;
+		case SI_SUPER_STAR:
+			break;
+		case SI_HIGH_RANKER:
+			break;
+		case SI_DARKCROW:
+			break;
+		case SI_2013_VALENTINE1:
+			break;
+		case SI_2013_VALENTINE2:
+			break;
+		case SI_2013_VALENTINE3:
+			break;
+		case SI_ILLUSIONDOPING:
+			break;
+		case SI_WIDEWEB:
+			break;
+		case SI_CHILL:
+			break;
+		case SI_BURNT:
+			break;
+		case SI_PCCAFE_PLAY_TIME:
+			break;
+		case SI_TWISTED_TIME:
+			break;
+		case SI_FLASHCOMBO:
+			break;
+		case SI_JITTER_BUFF1:
+			break;
+		case SI_JITTER_BUFF2:
+			break;
+		case SI_JITTER_BUFF3:
+			break;
+		case SI_JITTER_BUFF4:
+			break;
+		case SI_JITTER_BUFF5:
+			break;
+		case SI_JITTER_BUFF6:
+			break;
+		case SI_JITTER_BUFF7:
+			break;
+		case SI_JITTER_BUFF8:
+			break;
+		case SI_JITTER_BUFF9:
+			break;
+		case SI_JITTER_BUFF10:
+			break;
+		case SI_CUP_OF_BOZA:
+			break;
+		case SI_B_TRAP:
+			break;
+		case SI_E_CHAIN:
+			break;
+		case SI_E_QD_SHOT_READY:
+			break;
+		case SI_C_MARKER:
+			break;
+		case SI_H_MINE:
+			break;
+		case SI_H_MINE_SPLASH:
+			break;
+		case SI_P_ALTER:
+			break;
+		case SI_HEAT_BARREL:
+			break;
+		case SI_ANTI_M_BLAST:
+			break;
+		case SI_SLUGSHOT:
+			break;
+		case SI_SWORDCLAN:
+			break;
+		case SI_ARCWANDCLAN:
+			break;
+		case SI_GOLDENMACECLAN:
+			break;
+		case SI_CROSSBOWCLAN:
+			break;
+		case SI_PACKING_ENVELOPE1:
+			break;
+		case SI_PACKING_ENVELOPE2:
+			break;
+		case SI_PACKING_ENVELOPE3:
+			break;
+		case SI_PACKING_ENVELOPE4:
+			break;
+		case SI_PACKING_ENVELOPE5:
+			break;
+		case SI_PACKING_ENVELOPE6:
+			break;
+		case SI_PACKING_ENVELOPE7:
+			break;
+		case SI_PACKING_ENVELOPE8:
+			break;
+		case SI_PACKING_ENVELOPE9:
+			break;
+		case SI_PACKING_ENVELOPE10:
+			break;
+		case SI_GLASTHEIM_TRANS:
+			break;
+		case SI_ZONGZI_POUCH_TRANS:
+			break;
+		case SI_HEAT_BARREL_AFTER:
+			break;
+		case SI_DECORATION_OF_MUSIC:
+			break;
+		case SI_OVERSEAEXPUP:
+			break;
+		case SI_CLOWN_N_GYPSY_CARD:
+			break;
+		case SI_OPEN_NPC_MARKET:
+			break;
+		case SI_BEEF_RIB_STEW:
+			break;
+		case SI_PORK_RIB_STEW:
+			break;
+		case SI_CHUSEOK_MONDAY:
+			break;
+		case SI_CHUSEOK_TUESDAY:
+			break;
+		case SI_CHUSEOK_WEDNESDAY:
+			break;
+		case SI_CHUSEOK_THURSDAY:
+			break;
+		case SI_CHUSEOK_FRIDAY:
+			break;
+		case SI_CHUSEOK_WEEKEND:
+			break;
+		case SI_ALL_LIGHTGUARD:
+			break;
+		case SI_ALL_LIGHTGUARD_COOL_TIME:
+			break;
+		case SI_MTF_MHP:
+			break;
+		case SI_MTF_MSP:
+			break;
+		case SI_MTF_PUMPKIN:
+			break;
+		case SI_MTF_HITFLEE:
+			break;
+		case SI_MTF_CRIDAMAGE2:
+			break;
+		case SI_MTF_SPDRAIN:
+			break;
+		case SI_ACUO_MINT_GUM:
+			break;
+		case SI_S_HEALPOTION:
+			break;
+		case SI_REUSE_LIMIT_S_HEAL_POTION:
+			break;
+		case SI_PLAYTIME_STATISTICS:
+			break;
+		case SI_GN_CHANGEMATERIAL_OPERATOR:
+			break;
+		case SI_GN_MIX_COOKING_OPERATOR:
+			break;
+		case SI_GN_MAKEBOMB_OPERATOR:
+			break;
+		case SI_GN_S_PHARMACY_OPERATOR:
+			break;
+		case SI_SO_EL_ANALYSIS_DISASSEMBLY_OPERATOR:
+			break;
+		case SI_SO_EL_ANALYSIS_COMBINATION_OPERATOR:
+			break;
+		case SI_NC_MAGICDECOY_OPERATOR:
+			break;
+		case SI_GUILD_STORAGE:
+			break;
+		case SI_GC_POISONINGWEAPON_OPERATOR:
+			break;
+		case SI_WS_WEAPONREFINE_OPERATOR:
+			break;
+		case SI_BS_REPAIRWEAPON_OPERATOR:
+			break;
+		case SI_GET_MAILBOX:
+			break;
+		case SI_JUMPINGCLAN:
+			break;
+		case SI_JP_OTP:
+			break;
+		case SI_MAX:
+			break;
+		default:
+			break;
+		}
+	}
+}
+void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE(const char *packetdata){
+	if (g_pSharedData->test02 == FALSE)return;
+	PACKET_CZ_MSG_STATE_CHANGE* p = (PACKET_CZ_MSG_STATE_CHANGE*)packetdata;
+
+	for (std::list<s_skill_tm>::iterator it = tmList.begin(); it != tmList.end();){
+		if (it->id == p->id && it->type == p->type){
+			it = tmList.erase(it);
+		}
+		it++;
+	}
+}
+//Special skill timer
+void CRoCodeBind::PacketHandler_Cz_NOTIFY_EFFECT2(const char *packetdata){
+	if (g_pSharedData->test02 == FALSE)return;
+	PACKET_CZ_NOTIFY_EFFECT2* p = (PACKET_CZ_NOTIFY_EFFECT2*)packetdata;
+	std::stringstream str;
+	s_skill_tm tm;
+	tm.id = p->id;
+	switch (p->type)
+	{
+	case 0x58:
+		tm.name = "Isilla";
+		tm.type = -1;
+		tm.tick = 5000;
+		tm.e_tick = tm.tick + timeGetTime();
+		tmList.push_back(tm);
+		break;
+	default:
+		break;
+	}
+}
 void CRoCodeBind::PacketQueueProc(char *buf,int len)
 {
 	if( len > 0 ){

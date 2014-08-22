@@ -111,6 +111,9 @@
     <ClInclude Include="Core\ro\packet.h">
       <Filter>ヘッダー ファイル\Core\ro</Filter>
     </ClInclude>
+    <ClInclude Include="Core\ro\skill.h">
+      <Filter>ヘッダー ファイル\Core\ro</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\RoCodeBind.cpp">

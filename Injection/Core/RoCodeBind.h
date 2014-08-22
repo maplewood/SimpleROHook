@@ -35,6 +35,7 @@
 #include "ro/object.h"
 #include "ro/map.h"
 #include "ro/task.h"
+#include "ro/skill.h"
 
 #define D3DFVF_CPOLVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE)
 #define D3DCOLOR_ARGB(a,r,g,b) \
@@ -112,6 +113,21 @@ private:
 	void PacketHandler_Cz_Say_Dialog(const char *packetdata);
 	void PacketHandler_Cz_Menu_List(const char *packetdata);
 
+	struct DELAY{
+		WORD  PacketType;
+		WORD  skill_id;
+		DWORD tick;
+		DWORD etick;
+	};
+	std::list<DELAY> dList;
+	void PacketHandler_Cz_SKILL_POSTDELAY(const char *packetdata);
+
+	std::list<s_skill_tm> tmList;
+	void PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata);
+	void PacketHandler_Cz_MSG_STATE_CHANGE(const char *packetdata);
+	void PacketHandler_Cz_NOTIFY_EFFECT2(const char *packetdata);
+
+
 	void SendMessageToNPCLogger(const char *src, int size);
 
 	struct p_std_map_packetlen
@@ -132,7 +148,6 @@ private:
 
 	LPDIRECTDRAWSURFACE7 m_pddsFontTexture;
 	CSFastFont *m_pSFastFont;
-
 	struct MouseDataStructure
 	{
 		int x_axis,y_axis,wheel;

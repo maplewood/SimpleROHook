@@ -26,7 +26,7 @@ namespace SimpleROHookCS
             TrackBarControl.Minimum = min;
             TrackBarControl.Maximum = max;
         }
-        public void SetTickFrequency(int tick)
+        public void SettickFrequency(int tick)
         {
             TrackBarControl.TickFrequency = tick;
         }
