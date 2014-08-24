@@ -763,6 +763,9 @@ void CRoCodeBind::DrawSRHDebug(IDirect3DDevice7* d3ddevice)
 			int itemnums = p_gamemode->m_world->m_itemList.size();
 			str << " m_itemList size =" << itemnums << "\n";
 
+			int m_tmListnums = m_tmList.size();
+			str << " m_tmList size =" << m_tmListnums << "\n";
+
 			std::list<CItem*> itemList = p_gamemode->m_world->m_itemList;
 			for( std::list<CItem*>::iterator it = itemList.begin() ; it != itemList.end() ; it++ )
 			{
@@ -1058,7 +1061,7 @@ void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
 	//-----skill timer------
 	int actornums = pGamemode->m_world->m_actorList.size();
 	std::list<CGameActor*> actorList = pGamemode->m_world->m_actorList;
-	std::list<s_skill_tm> temp_tmList = tmList;
+	std::map<unsigned long, std::list<s_skill_tm>> m_tempTmList =m_tmList;
 	//my
 	CPlayer *pPlayer = (CPlayer*)pGamemode->m_world->m_player;
 	const float BARB = -17.5f;
@@ -1068,8 +1071,10 @@ void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
 	const int TIMEBY =   3;
 	const float SB   =  -1.8f;
 	float yy = BARB;
-	for (std::list<s_skill_tm>::iterator it = temp_tmList.begin(); it != temp_tmList.end(); it++){
-		if (pPlayer->m_gid == it->id){
+	if (m_tempTmList.find(pPlayer->m_gid) == m_tempTmList.end()){
+	}
+	else{
+		for (std::list<s_skill_tm>::iterator it = m_tempTmList[pPlayer->m_gid].begin(); it != m_tempTmList[pPlayer->m_gid].end(); it++){
 			if (it->e_tick > timeGetTime()){
 				vector3d pointvecter;
 				float fx, fy, oow;
@@ -1095,7 +1100,7 @@ void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
 					sx = (int)fx - 30; // +60 side of the true cast bar
 					sy = (int)fy - 3;
 					DrawGage(d3ddevice, sx, sy, 60, 6, value, D3DCOLOR_ARGB(0x00, 170, 170, 220), 0x96, 0);
-					
+
 					putname << it->name;
 					if (tm > 0){
 						puttime << std::setfill(' ') << std::setw(3) << tm << "'";
@@ -1105,10 +1110,10 @@ void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
 						puttime << std::setfill(' ') << std::setw(4) << " ";
 						puttime << std::setfill(' ') << std::setw(2) << ts << "''";
 					}
-					
+
 					sx += NAMEBX;
 					sy += NAMEBY;
-					m_pSFastFont->DrawText((LPSTR)putname.str().c_str(), sx, sy, D3DCOLOR_ARGB(230, 255,255,255), 0, NULL);
+					m_pSFastFont->DrawText((LPSTR)putname.str().c_str(), sx, sy, D3DCOLOR_ARGB(230, 255, 255, 255), 0, NULL);
 					sx += TIMEBX;
 					sy += TIMEBY;
 					m_pSFastFont->DrawText((LPSTR)puttime.str().c_str(), sx, sy, D3DCOLOR_ARGB(150, 255, 255, 255), 1, NULL);
@@ -1119,66 +1124,66 @@ void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
 			}
 		}
 	}
-
 	//other
 	for (std::list<CGameActor*>::iterator it = actorList.begin(); it != actorList.end(); it++)
 	{
 		float yy = BARB;
 		CGameActor *pGameActor = *it;
 		if (pGameActor){
-			for (std::list<s_skill_tm>::iterator it = temp_tmList.begin(); it != temp_tmList.end(); it++){
-				if (pGameActor->m_gid == it->id){
-					if (it->e_tick > timeGetTime()){
-						vector3d pointvecter;
-						float fx, fy, oow;
-						pointvecter.Set(0, yy, 0);
-						ProjectVertex(pGameActor->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
-						int sx, sy;
-						std::stringstream putname;
-						std::stringstream puttime;
-						sx = (int)fx;
-						sy = (int)fy;
-						unsigned long value;
-						float t1, t2;
-						int tm, ts;
-						t1 = (float)(it->e_tick - timeGetTime());
-						t2 = (float)(it->tick);
-						tm = ((int)t1 / 1000) / 60;
-						ts = ((int)t1 / 1000) % 60;
-						value = (unsigned long)((t1 / t2) * 1000);
+			if (m_tempTmList.find(pGameActor->m_gid) != m_tempTmList.end()){
+				for (std::list<s_skill_tm>::iterator it = m_tempTmList[pGameActor->m_gid].begin(); it != m_tempTmList[pGameActor->m_gid].end(); it++){
+					if (m_tmOnMemberList.find(pGameActor->m_gid) == m_tmOnMemberList.end() && g_pSharedData->test01) break;
+						if (it->e_tick > timeGetTime()){
+							vector3d pointvecter;
+							float fx, fy, oow;
+							pointvecter.Set(0, yy, 0);
+							ProjectVertex(pGameActor->m_pos, pView->m_viewMatrix, &fx, &fy, &oow);
+							int sx, sy;
+							std::stringstream putname;
+							std::stringstream puttime;
+							sx = (int)fx;
+							sy = (int)fy;
+							unsigned long value;
+							float t1, t2;
+							int tm, ts;
+							t1 = (float)(it->e_tick - timeGetTime());
+							t2 = (float)(it->tick);
+							tm = ((int)t1 / 1000) / 60;
+							ts = ((int)t1 / 1000) % 60;
+							value = (unsigned long)((t1 / t2) * 1000);
 
-						ProjectVertexEx(pGameActor->m_pos, pointvecter, pView->m_viewMatrix, &fx, &fy, &oow);
-						{
-							static int sx = 0, sy = 0;
-							sx = (int)fx - 30; // +60 side of the true cast bar
-							sy = (int)fy - 3;
-							DrawGage(d3ddevice, sx, sy, 60, 6, value, D3DCOLOR_ARGB(0x00, 170, 170, 220), 0x96, 0);
-							
-							putname << it->name;
-							if (tm > 0){
-								puttime << std::setfill(' ') << std::setw(3) << tm << "'";
-								puttime << std::setfill('0') << std::setw(2) << ts << "''";
+							ProjectVertexEx(pGameActor->m_pos, pointvecter, pView->m_viewMatrix, &fx, &fy, &oow);
+							{
+								static int sx = 0, sy = 0;
+								sx = (int)fx - 30; // +60 side of the true cast bar
+								sy = (int)fy - 3;
+								DrawGage(d3ddevice, sx, sy, 60, 6, value, D3DCOLOR_ARGB(0x00, 170, 170, 220), 0x96, 0);
+
+								putname << it->name;
+								if (tm > 0){
+									puttime << std::setfill(' ') << std::setw(3) << tm << "'";
+									puttime << std::setfill('0') << std::setw(2) << ts << "''";
+								}
+								if (tm <= 0){
+									puttime << std::setfill(' ') << std::setw(4) << " ";
+									puttime << std::setfill(' ') << std::setw(2) << ts << "''";
+								}
+								sx += NAMEBX;
+								sy += NAMEBY;
+								m_pSFastFont->DrawText((LPSTR)putname.str().c_str(), sx, sy, D3DCOLOR_ARGB(230, 255, 255, 255), 0, NULL);
+								sx += TIMEBX;
+								sy += TIMEBY;
+								m_pSFastFont->DrawText((LPSTR)puttime.str().c_str(), sx, sy, D3DCOLOR_ARGB(150, 255, 255, 255), 1, NULL);
+
+
 							}
-							if (tm <= 0){
-								puttime << std::setfill(' ') << std::setw(4) << " ";
-								puttime << std::setfill(' ') << std::setw(2) << ts << "''";
-							}
-							sx += NAMEBX;
-							sy += NAMEBY;
-							m_pSFastFont->DrawText((LPSTR)putname.str().c_str(), sx, sy, D3DCOLOR_ARGB(230, 255, 255, 255), 0, NULL);
-							sx += TIMEBX;
-							sy += TIMEBY;
-							m_pSFastFont->DrawText((LPSTR)puttime.str().c_str(), sx, sy, D3DCOLOR_ARGB(150, 255, 255, 255), 1, NULL);
-
-
+							yy += SB;
 						}
-						yy += SB;
-					}
 
+					}
 				}
 			}
 		}
-	}
 	//-----Delay-------
 	yy = 4.0f;
 	std::list<DELAY> tempList = dList;
@@ -1215,13 +1220,19 @@ void CRoCodeBind::DrawST(IDirect3DDevice7* d3ddevice){
 		}
 		it++;
 	}
-	for (std::list<s_skill_tm>::iterator it = tmList.begin(); it != tmList.end();){
-		if (it->e_tick < timeGetTime()){
-			it = tmList.erase(it);
-		}
-		it++;
-	}
+	for (std::map<unsigned long, std::list<s_skill_tm>>::iterator itm = m_tmList.begin(); itm != m_tmList.end();){
 
+		for (std::list<s_skill_tm>::iterator it = itm->second.begin(); it != itm->second.end();){
+			if (it->e_tick < timeGetTime()){
+				it = itm->second.erase(it);
+			}
+			it++;
+		}
+		if (itm->second.empty()){
+			itm = m_tmList.erase(itm);
+		}
+		itm++;
+	}
 
 }
 
@@ -1262,7 +1273,7 @@ void CRoCodeBind::InitPacketHandler(void)
 	m_packethandler[HEADER_ZC_MSG_STATE_CHANGE2] = &CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2;
 	m_packethandler[HEADER_ZC_MSG_STATE_CHANGE] = &CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE;
 	m_packethandler[HEADER_ZC_NOTIFY_EFFECT2] = &CRoCodeBind::PacketHandler_Cz_NOTIFY_EFFECT2;
-
+	m_packethandler[HEADER_ZC_GROUP_LIST] = &CRoCodeBind::PacketHandler_Cz_GROUP_LIST;
 }
 
 void CRoCodeBind::PacketProc(const char *packetdata)
@@ -1436,6 +1447,11 @@ void CRoCodeBind::PacketHandler_Cz_SKILL_POSTDELAY(const char *packetdata)
 void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 	if (g_pSharedData->test02 == FALSE)return;
 	PACKET_CZ_MSG_STATE_CHANGE2* p = (PACKET_CZ_MSG_STATE_CHANGE2*)packetdata;
+	if (m_tmList.find(p->id) == m_tmList.end()){
+		std::list<s_skill_tm> tmList;
+		m_tmList[p->id] = tmList;
+	}
+
 	std::stringstream str;
 	s_skill_tm tm;
 	tm.type = p->type;
@@ -1444,9 +1460,9 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 	tm.e_tick = p->tick + timeGetTime();
 	tm.v1 = p->v1;
 
-	for (std::list<s_skill_tm>::iterator it = tmList.begin(); it != tmList.end();){
+	for (std::list<s_skill_tm>::iterator it = m_tmList[p->id].begin(); it != m_tmList[p->id].end();){
 		if (it->id == tm.id && it->type == tm.type){
-			it = tmList.erase(it);
+			it = m_tmList[p->id].erase(it);
 		}
 		it++;
 	}
@@ -1461,7 +1477,7 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 		case SI_ENDURE:
 			str << "Endure";
 			tm.name = str.str();
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_ENERGYCOAT:
 			break;
@@ -1471,13 +1487,13 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 			str << "Ange";
 			str << tm.v1;
 			tm.name = str.str();
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_BLESSING:
 			str << "Bless";
 			str << tm.v1;
 			tm.name = str.str();
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_SIGNUMCRUCIS:
 			break;
@@ -1486,7 +1502,7 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 			str << tm.v1;
 			tm.name = str.str();
 
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_DECREASEAGI:
 			break;
@@ -1517,14 +1533,14 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 			str << tm.v1;
 			tm.name = str.str();
 
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_ASPERSIO:
 			str << "Aspe";
 			str << tm.v1;
 			tm.name = str.str();
 
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_BENEDICTIO:
 			break;
@@ -1533,21 +1549,21 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 			str << "[" << tm.v1 << "]";
 			tm.name = str.str();
 
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_MAGNIFICAT:
 			str << "Magni";
 			str << tm.v1;
 			tm.name = str.str();
 
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_GLORIA:
 			str << "Gloria";
 			str << tm.v1;
 			tm.name = str.str();
 
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_AETERNA:
 			break;
@@ -1697,7 +1713,7 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 			str << "Magni";
 			str << tm.v1;
 			tm.name = str.str();
-			tmList.push_back(tm);
+			m_tmList[p->id].push_back(tm);
 			break;
 		case SI_EDP:
 			break;
@@ -2907,10 +2923,14 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE2(const char *packetdata){
 void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE(const char *packetdata){
 	if (g_pSharedData->test02 == FALSE)return;
 	PACKET_CZ_MSG_STATE_CHANGE* p = (PACKET_CZ_MSG_STATE_CHANGE*)packetdata;
+	if (m_tmList.find(p->id) == m_tmList.end()){
+		std::list<s_skill_tm> tmList;
+		m_tmList[p->id] = tmList;
+	}
 
-	for (std::list<s_skill_tm>::iterator it = tmList.begin(); it != tmList.end();){
+	for (std::list<s_skill_tm>::iterator it = m_tmList[p->id].begin(); it != m_tmList[p->id].end();){
 		if (it->id == p->id && it->type == p->type){
-			it = tmList.erase(it);
+			it = m_tmList[p->id].erase(it);
 		}
 		it++;
 	}
@@ -2919,6 +2939,10 @@ void CRoCodeBind::PacketHandler_Cz_MSG_STATE_CHANGE(const char *packetdata){
 void CRoCodeBind::PacketHandler_Cz_NOTIFY_EFFECT2(const char *packetdata){
 	if (g_pSharedData->test02 == FALSE)return;
 	PACKET_CZ_NOTIFY_EFFECT2* p = (PACKET_CZ_NOTIFY_EFFECT2*)packetdata;
+	if (m_tmList.find(p->id) == m_tmList.end()){
+		std::list<s_skill_tm> tmList;
+		m_tmList[p->id] = tmList;
+	}
 	std::stringstream str;
 	s_skill_tm tm;
 	tm.id = p->id;
@@ -2929,12 +2953,26 @@ void CRoCodeBind::PacketHandler_Cz_NOTIFY_EFFECT2(const char *packetdata){
 		tm.type = -1;
 		tm.tick = 5000;
 		tm.e_tick = tm.tick + timeGetTime();
-		tmList.push_back(tm);
+		m_tmList[p->id].push_back(tm);
 		break;
 	default:
 		break;
 	}
 }
+void CRoCodeBind::PacketHandler_Cz_GROUP_LIST(const char *packetdata){
+	PACKET_CZ_GROUP_LIST* p = (PACKET_CZ_GROUP_LIST*)packetdata;
+	MEMBER* pm = p->party_list;
+	int size = p->PacketLength - 28;
+	int x = size / 46;
+	m_tmOnMemberList.clear();
+	for (int i = 0; i < x; i++){
+		std::stringstream str;
+		m_tmOnMemberList[pm->id] = 1;
+		pm++;
+	}
+}
+
+
 void CRoCodeBind::PacketQueueProc(char *buf,int len)
 {
 	if( len > 0 ){

@@ -593,6 +593,19 @@ struct PACKET_CZ_NOTIFY_EFFECT2{
 	DWORD id;
 	DWORD type;
 };
+struct MEMBER{
+	DWORD id;
+	BYTE nick_name[24];
+	BYTE map_name[16];
+	BYTE leader;
+	BYTE offline;
+};
+struct PACKET_CZ_GROUP_LIST{
+	WORD PacketType;
+	WORD PacketLength;
+	BYTE party_name[24];
+	MEMBER party_list[];
+};
 #pragma warning(pop)
 
 #pragma pack(pop)
